@@ -32,7 +32,7 @@ BEGIN
           zero_i        <= '0';
        elsif (enable = '1') then 
           if (current_count = zeros) then
-            --current_count <= max_count;
+            current_count <= max_count;
             zero_i        <= '1';
           else 
             current_count <= current_count - '1'; -- continue counting down
