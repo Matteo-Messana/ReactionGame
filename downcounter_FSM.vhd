@@ -11,7 +11,7 @@ entity downcounter is
            reset  : in  STD_LOGIC;
            enable : in  STD_LOGIC;
            zero   : out STD_LOGIC;
-           value  : out STD_LOGIC_VECTOR(WIDTH-1 downto 0)
+           --value  : out STD_LOGIC_VECTOR(WIDTH-1 downto 0)
          );
 end downcounter;
 
@@ -32,7 +32,7 @@ BEGIN
           zero_i        <= '0';
        elsif (enable = '1') then 
           if (current_count = zeros) then
-            current_count <= max_count;
+            --current_count <= max_count;
             zero_i        <= '1';
           else 
             current_count <= current_count - '1'; -- continue counting down
