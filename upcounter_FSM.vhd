@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity upcounter is
+entity upcounter_FSM is
    Generic (  period : integer:= 4;
               WIDTH  : integer:= 3
            );--generics are just information, no specified behaviour in an entity
@@ -13,9 +13,9 @@ entity upcounter is
              zero   : out STD_LOGIC;
              value  : out STD_LOGIC_VECTOR(WIDTH-1 downto 0)
            ); 
-end upcounter;
+end upcounter_FSM;
 
-architecture Behavioral of upcounter is
+architecture Behavioral of upcounter_FSM is
    signal current_count : STD_LOGIC_VECTOR(WIDTH-1 downto 0);
    signal zero_i        : STD_LOGIC;   
    
