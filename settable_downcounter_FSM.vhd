@@ -21,8 +21,8 @@ architecture Behavioral of settable_downcounter_FSM is
 
   signal zero_i        : STD_LOGIC; 
   
-  constant max_count   : STD_LOGIC_VECTOR(WIDTH-1 downto 0) := 
-                         STD_LOGIC_VECTOR(to_unsigned(period-1, WIDTH));
+  --constant max_count   : STD_LOGIC_VECTOR(WIDTH-1 downto 0) := 
+                         --STD_LOGIC_VECTOR(to_unsigned(period-1, WIDTH));
   constant zeros       : STD_LOGIC_VECTOR(WIDTH-1 downto 0) := (others => '0');
   
 BEGIN
@@ -30,11 +30,11 @@ BEGIN
    count: process(clk,reset) begin
      if (rising_edge(clk)) then 
        if (reset = '1') then 
-          current_count <= set_digit;
+          current_count <= set_digit; --do we need this...?
           zero_i        <= '0';
        elsif (enable = '1') then 
           if (current_count = zeros) then
-            current_count <= max_count;
+            --current_count <= max_count;
             zero_i        <= '1';
           else 
             current_count <= current_count - '1'; -- continue counting down
