@@ -37,11 +37,13 @@ architecture Behavioural of reactionGameFSM is
 			if(START_GAME = '0')
 				nextState = idle;
 			elsif(START_GAME = '1')
-				nextState = initializeSevenSegDisplay;
+				nextState = initializeScore;
 			end if;
 		
 		--set of states to initialize the system after a reset/new round of games
-			
+		when initializeScore =>
+			--add functionality
+			nextState <= initializeSevenSegDisplay;
 		when initializeSevenSegDisplay =>
 			--add functionality
 			nextState <= initializeStimLEDS;
@@ -85,14 +87,18 @@ architecture Behavioural of reactionGameFSM is
 			--Updates player 1 score
 			--Updates round counter
 			--Sends off to display winner
+			--nextState <= displayWinner
 		
 		when updatePlayer2Score
 			--Updates player 2 score
 			--Updates round counter
 			--Sends off to display winner
+			--nextState <= displayWinner
 			
-		when 
-		
+		when displayWinner
+			--Recieve lap register's time and display
+			--transition into next round
+			--nextState <= initializeSevenSegDIsplay
 		end case;
 	end process;
 		
@@ -112,4 +118,6 @@ architecture Behavioural of reactionGameFSM is
 	--add functionality
 	
 	end process
+		
+	
 	
