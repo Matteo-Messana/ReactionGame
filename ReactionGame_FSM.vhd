@@ -37,6 +37,13 @@ architecture Behavioural of reactionGameFSM is
 	signal lap_thousandths_secs_i, lap_hundredths_secs_i, lap_tenths_secs_i, lap_secs_i: STD_LOGIC_VECTOR(3 downto 0);
 	signal lapRegisterMUX_selector_i : STD_LOGIC;
 	signal digit_mux_thousandths_secs_i, digit_mux_hundredths_secs_i, digit_mux_tenths_secs_i, digit_mux_secs_i: STD_LOGIC_VECTOR(3 downto 0);
+	signal digit_mux_slector_i : STD_LOGIC;
+	signal time_digit_i : STD_LOGIC_VECTOR (3 downto 0);
+	signal seven_segment_signals_i : STD_LOGIC_VECTOR (7 downto 0);
+	signal data_i : STD_LOGIC_VECTOR ( 3 downto 0);
+	signal dp_in_i : STD_LOGIC;
+	signal digit_select_i, an_outputs_i : STD_LOGIC_VECTOR (3 downto 0);
+	signal enable_stimulus_i : STD_LOGIC;
 
 	--declare different components of FSM here
 	
@@ -199,21 +206,32 @@ architecture Behavioural of reactionGameFSM is
 		
 	DIGIT_MUX: digitMux_FSM
 		PORT MAP(
-			
+				thousandths_secs   		=> thousandths_secs_i,
+				hundredths_secs   		=> hundredths_secs_i,
+				tenths_secs   			=> tenths_secs_i,
+			   	secs				=> secs_i,
+				selector   			=> digit_mux_slector_i,
+				time_digit 			=> time_digit_i
 			);
 		
 	SS_DECODER: seven_segment_decoder
 		PORT MAP(
-			
+				seven_segment_signals 		=> seven_segment_signals_i,
+			   	dp_in 				=> dp_in_i,
+			   	data  				=> data_i
 			);
 		
 	SS_SELECTOR: seven_segment_selector
 		PORT MAP(
-			
+				clk          			=> clk,
+			   	digit_select 			=> digit_select_i,
+			   	an_outputs   			=> an_outputs_i,
+			   	reset       			=> reset
 			);
 	STIM: stimulus
 		PORT MAP(
-			
+				enable       			=> enable_stimulus_i,
+			      	LED9to15       			=> stim_LEDs
 			);
 		
 	FSM_Combinational_Logic: process(currentState)
