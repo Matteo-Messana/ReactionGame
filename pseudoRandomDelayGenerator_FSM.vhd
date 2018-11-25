@@ -19,11 +19,11 @@ entity psuedoRandomDelayGenerator_FSM is
 
       process(clk, reset) begin 
         if(reset = '1') then 
-          count <= (others => '0');
+          count <= (others => '1');
         elsif(rising_edge(clk)) then
           if(enable = '1') then
             count(3) <= count(0);
-            count(2) <= ~(count(3)) XOR count(0);
+            count(2) <= count(3) XOR count(0);
             count(1) <= count(2);
             count(0) <= count(1);
           end if;
