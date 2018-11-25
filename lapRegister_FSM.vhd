@@ -17,7 +17,26 @@ entity lapRegister_FSM is
 end lapRegister_FSM;
 
 architecture Behavioral of lapRegister_FSM is
+    
+-- Internal signals
+    signal load_i : out STD_LOGIC;
+    
+    component load_FSM is
+    PORT(   input:        in STD_LOGIC;
+            clk:          in STD_LOGIC;
+            output:       out STD_LOGIC
+        );
+    end component;
+        
 begin
+    
+    inputLoad : load_FSM
+    PORT MAP(
+                input => load,
+                clk => clk,
+                output => load_i
+            );
+              
     process(clk, reset, thousandths_secs, hundredths_secs, tenths_secs, secs) 
     begin
         if(reset = '1') then 
@@ -27,7 +46,7 @@ begin
             lap_secs <= "0000";
         else
             if(rising_edge(clk)) then
-                if(load = '1') then
+                if(load_i = '1') then
                     lap_thousandths_secs <= thousandths_secs;
                     lap_hundredths_secs <= hundredths_secs;
                     lap_tenths_secs <= tenths_secs;
