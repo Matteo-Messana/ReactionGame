@@ -33,11 +33,101 @@ architecture Behavioural of reactionGameFSM is
 	--declare different components of FSM here
 	
 	component delayClockDivider_FSM is 
-		PORT (
-			
-			
-		);
+		PORT ( 	clk      : in  STD_LOGIC;
+           		reset    : in  STD_LOGIC;
+           		enable   : in  STD_LOGIC;
+           		FSM_enable : out STD_LOGIC;
+			set_digit : in STD_LOGIC_VECTOR (3 downto 0)
+		      );
+	end component;
+		
+	component digitMux_FSM is
+  		PORT ( 
+          		thousandths_secs   : in  STD_LOGIC_VECTOR(3 downto 0);
+          		hundredths_secs   : in  STD_LOGIC_VECTOR(3 downto 0);
+          		tenths_secs   : in  STD_LOGIC_VECTOR(3 downto 0);
+          		secs   : in  STD_LOGIC_VECTOR(3 downto 0);
+          		selector   : in  STD_LOGIC_VECTOR(3 downto 0);
+          		time_digit : out STD_LOGIC_VECTOR(3 downto 0)
+        		);
+	end component;
+		
+	component lapRegisterMux_FSM is
+		    PORT ( selector:						in STD_LOGIC;
+			   thousandths_secs:				in STD_LOGIC_VECTOR(3 downto 0);
+			   hundredths_secs:					in STD_LOGIC_VECTOR(3 downto 0);
+			   tenths_secs:						in STD_LOGIC_VECTOR(3 downto 0);
+			   secs:              				in STD_LOGIC_VECTOR(3 downto 0);
+			   lap_thousandths_secs:    		in STD_LOGIC_VECTOR(3 downto 0);
+			   lap_hundredths_secs:     		in STD_LOGIC_VECTOR(3 downto 0);
+			   lap_tenths_secs:         		in STD_LOGIC_VECTOR(3 downto 0);
+			   lap_secs:          				in STD_LOGIC_VECTOR(3 downto 0);
+			   digit_mux_thousandths_secs :     out STD_LOGIC_VECTOR(3 downto 0);
+			   digit_mux_hundredths_secs :   	out STD_LOGIC_VECTOR(3 downto 0);
+			   digit_mux_tenths_secs :   		out STD_LOGIC_VECTOR(3 downto 0);
+			   digit_mux_secs :   				out std_logic_vector(3 downto 0)
+		      );
+	end component;
+		
+
+	component lapRegister_FSM is
+		    PORT ( clk:						in STD_LOGIC;
+			   reset:					in STD_LOGIC;
+			   load:					in STD_LOGIC;
+			   thousandths_secs:        in STD_LOGIC_VECTOR(3 downto 0);
+			   hundredths_secs:			in STD_LOGIC_VECTOR(3 downto 0);
+			   tenths_secs :			in STD_LOGIC_VECTOR(3 downto 0);
+			   secs:					in STD_LOGIC_VECTOR(3 downto 0);
+			   lap_thousandths_secs :	out STD_LOGIC_VECTOR(3 downto 0);
+			   lap_hundredths_secs :	out STD_LOGIC_VECTOR(3 downto 0);
+			   lap_tenths_secs :		out STD_LOGIC_VECTOR(3 downto 0);
+			   lap_secs:				out STD_LOGIC_VECTOR(3 downto 0)
+		       );
+	end component;
+		
+	component playClockDivider_FSM is	
+		    PORT ( clk      				: in  STD_LOGIC;
+			   reset    				: in  STD_LOGIC;
+			   enable   				: in STD_LOGIC;
+			   secs 					: out STD_LOGIC_VECTOR(3 downto 0);
+			   tenths_secs 				: out STD_LOGIC_VECTOR(3 downto 0);
+			   hundredths_secs 			: out STD_LOGIC_VECTOR(3 downto 0);
+			   thousandths_secs 		: out STD_LOGIC_VECTOR(3 downto 0)     
+		     );
+	end component;
+		
+	component psuedoRandomDelayGenerator_FSM is
+		  PORT (
+			clk     : in STD_LOGIC;
+			reset   : in STD_LOGIC;
+			enable  : in STD_LOGIC;
+			delay   : out STD_LOGIC_VECTOR (3 downto 0)  
+			);
+	end component;
+		
+	component seven_segment_decoder is
+		    PORT ( 
+			   seven_segment_signals : out STD_LOGIC_VECTOR(7 downto 0);
+			   dp_in : in  STD_LOGIC;
+			   data  : in  STD_LOGIC_VECTOR (3 downto 0)
+			 );
+	end component;
 	
+	component seven_segment_digit_selector is
+		    PORT ( clk          : in  STD_LOGIC;
+			   digit_select : out STD_LOGIC_VECTOR (3 downto 0);
+			   an_outputs   : out STD_LOGIC_VECTOR (3 downto 0);
+			   reset        : in  STD_LOGIC
+			 );
+	end component;
+		
+	component stimulus is
+		       PORT ( 
+			      enable         :   in STD_LOGIC;
+			      LED9to15       :   out STD_LOGIC_VECTOR(6 downto 0)
+		       );
+	end component;
+		
 	FSM_Combinational_Logic: process(currentState)
 	begin 
 		case currentState is
