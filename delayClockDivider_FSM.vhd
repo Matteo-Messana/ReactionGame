@@ -1,16 +1,16 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity Countdown_clock_divider is
+entity delayClockDivider_FSM is
     PORT ( clk      : in  STD_LOGIC;
            reset    : in  STD_LOGIC;
            enable   : in  STD_LOGIC;
            FSM_enable : out STD_LOGIC;
            set_digit : in STD_LOGIC_VECTOR (3 downto 0)
      );
-end Countdown_clock_divider;
+end delayClockDivider_FSM;
 
-architecture Behavioral of Countdown_clock_divider is
+architecture Behavioral of delayClockDivider_FSM is
 
 signal hundredhertz : STD_LOGIC;
 signal seconds: STD_LOGIC;
