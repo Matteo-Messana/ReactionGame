@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity stimulus is
        PORT ( 
               enable         :   in STD_LOGIC;
-              LED9to15       :   out STD_LOGIC
+              LED9to15       :   out STD_LOGIC_VECTOR(6 downto 0);
        );
 end stimulus;
 
