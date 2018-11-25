@@ -24,7 +24,7 @@ PORT    (
             clk:    in STD_LOGIC;
             reset:  in STD_LOGIC;
             enable: in STD_LOGIC;
-            zero:   out STD_LOGIC;
+            zero:   out STD_LOGIC
           );
                  
 end component;
@@ -40,34 +40,34 @@ PORT    (
             reset:  in STD_LOGIC;
             enable: in STD_LOGIC;
             set_digit: in STD_LOGIC_VECTOR(3 downto 0);
-            zero:   out STD_LOGIC;
+            zero:   out STD_LOGIC
           );
                  
 end component;
 
 begin     
         oneHertzClock: downcounter 
-        GENERIC MAP (
-                        period => (100000000),
+        GENERIC MAP ( 
+                        period => (100000000), --one second downcounter (as used in lab 2 & 3)
                         WIDTH => 28
                      )
         PORT MAP (
                     clk => clk,
                     reset => reset, --this will receive an FSM reset
                     enable => enable, --this will receive an FSM enable
-                    zero => seconds
+                    zero => seconds --sends to settable downcounter
                  );
                  
         SecondsClock: settable_downcounter 
                  GENERIC MAP (
-                                 period => (10),
+                                 period => (16), --can count down 16 seconds (F to 0)
                                  WIDTH => 4
                               )
                  PORT MAP (
                              clk => clk,
                              reset => reset, --this will receive an FSM reset
-                             enable => seconds,
-                             set_digit => set_digit,
+                             enable => seconds, --received from the usable downcounter
+                             set_digit => set_digit, --received from the pseudo-random delay generator
                              zero => FSM_enable --this outputs an enable signal to the FSM
                           );          
                                               
