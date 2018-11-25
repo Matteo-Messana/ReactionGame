@@ -4,12 +4,13 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 entity reactionGameFSM is
-	PORT (  clk			: in STD_LOGIC;
+	PORT (  	clk		: in STD_LOGIC;
 			reset		: in STD_LOGIC;
 			start_game 	: in STD_LOGIC;
 			
 			player1_input 	: in STD_LOGIC;
 			player2_input 	: in STD_LOGIC;
+	      		next_game_input : in STD_LOGIC;
 			
 			stim_LEDs			: out STD_LOGIC_VECTOR(6 downto 0);
 	      		player1_LEDs			: out STD_LOGIC_VECTOR(2 downto 0);
@@ -43,8 +44,11 @@ architecture Behavioural of reactionGameFSM is
 	signal data_i : STD_LOGIC_VECTOR ( 3 downto 0);
 	signal dp_in_i : STD_LOGIC;
 	signal digit_select_i, an_outputs_i : STD_LOGIC_VECTOR (3 downto 0);
-	signal enable_stimulus_i : STD_LOGIC;
-
+	signal stimulus_enable_i : STD_LOGIC;
+	signal stim_LEDs_i: STD_LOGIC_VECTOR(6 downto 0);
+	signal player1_score_i, player2_score_i : STD_LOGIC_VECTOR(1 downto 0);
+	signal player1_LEDs_i, player2_LEDs_i: STD_LOGIC_VECTOR(2 downto 0);
+	signal seven_segment_digit_selector_reset : STD_LOGIC;
 	--declare different components of FSM here
 	
 	component delayClockDivider_FSM is 
@@ -230,8 +234,8 @@ architecture Behavioural of reactionGameFSM is
 			);
 	STIM: stimulus
 		PORT MAP(
-				enable       			=> enable_stimulus_i,
-			      	LED9to15       			=> stim_LEDs
+				enable       			=> stimulus_enable_i,
+			      	LED9to15       			=> stim_LEDs_i
 			);
 		
 	FSM_Combinational_Logic: process(currentState)
@@ -242,69 +246,80 @@ architecture Behavioural of reactionGameFSM is
 			if(start_game = '0')
 				nextState = idle;
 			elsif(start_game = '1')
-				nextState = initializeScore;
+				nextState = initializeGeneral;
 			end if;
 		
 		--set of states to initialize the system after a reset/new round of games
-		when initializeScore =>
-			--add functionality
-			nextState <= initializeSevenSegDisplay;
-		when initializeSevenSegDisplay =>
-			--add functionality
-			nextState <= initializeStimLEDS;
+
+		when initializeGeneral =>
+			seven_segment_digit_selector_reset <= '1';	--sent reset to the digit selector 
+			pseudoRandomDelayGenerator_reset_i <= '1';	--send reset to the random delay generator
+			playClockDivider_reset_i <= '1';		--reset game time counter to zero
 		
-		when initializeStimLEDS =>
-			--add functionality
-			nextState <= initializeGameWatch;
-			
-		when initializeGameWatch => 
-			--add functionality
+			stimulus_enable_i <= '0';			--make sure the stimulus LEDs are OFF
+
+			lapRegisterMUX_selector_i <= '0'; 		--display game time to start
 			nextState <= initializePseudoRandomDelay;
-			--add functionality
+			
 		when initializePseudoRandomDelay =>
-			--add functionality
+			seven_segment_digit_selector_reset <= '0';	
+			pseudoRandomDelayGenerator_reset_i <= '0';
+			playClockDivider_reset_i <= '0';
+
+			pseudoRandomDelayGenerator_enable_i <= '1';
+
+			delayClockDivider_reset_i <= '1';
 			nextState <= initializeCountdown;
+
 		when initializeCountdown =
-			--add functionality
+			delayClockDivider_reset_i <= '0';
 			nextState <= countdown;
 		
+		--remember to reset the lap register load signal
+
 		--end of initialization states
 	
-		when countdown
-			--check the zero output of the countdown module
-			--move to next state once the countdown reaches zero
-			--explicitly disable the countdown
+		when countdown =>
+			delayClockDivider_enable_i <= '1';
+			if(delayClockDivider_zero_i = '0') then
+				nextState <= countdown;
+			elsif(delayClockDivider_zero_i = '1') then
+				nextState <= stimulus;
+				delayClockDivider_enable_i <= '0';
+			end if;
+		
+		when stimulus =>
+			nextState <= play;
+			stimulus_enable_i <= '1';
+			playClockDivider_enable_i <= '1';
 			
-		when stimulus
-			--flash the stimulus LEDS -> pretty much set all to 1
-			--enable the count-up feature
-			
-		when play
-			--wait for inputs from the players
-			--if(player1BTN) then 
-				--sends a signal to the lap register
-				--nextState <= updatePlayer1Score
-			--elsif(player2BTN) then
-				--sends a signal to the lap register
-				--nextState <= updatePlayer2Score
+		when play => 
+			if(player1_input = '1')then 
+				nextState <= updatePlayer1Score;
+				lapRegisterMUX_selector_i <= '1';
+				lapRegister_load_i <= '1';
+			elsif(player2_input = '1') then
+				nextState <= updatePlayer2Score;
+				lapRegisterMUX_selector_i <= '1';
+				lapRegister_load_i <= '1';
+			end if;
 				
-		when updatePlayer1Score
-			--Updates player 1 score
-			--Updates round counter
-			--Sends off to display winner
-			--nextState <= displayWinner
+		when updatePlayer1Score => 
+			NextState <= displayWinner;
+			player1_score_i <= player1_score_i + '1';
 		
 		when updatePlayer2Score
-			--Updates player 2 score
-			--Updates round counter
-			--Sends off to display winner
-			--nextState <= displayWinner
+			NextState <= displayWinner;
+			player2_score_i <= player2_score_i + '1';
 			
 		when displayWinner
-			--Recieve lap register's time and display
-			--transition into next round
-			--nextState <= initializeSevenSegDIsplay
+			if(next_game_input = '0') then
+				nextState <= displayWinner;
+			elsif(next_game_input = '1') then
+				nextState <= initializeSevenSegDisplay;
+			end if;
 		end case;
+			
 	end process;
 		
 						
@@ -319,10 +334,36 @@ architecture Behavioural of reactionGameFSM is
 	
 	displayPlayerScore : process(reset, clk)
 	begin 
-	
-	--add functionality
-	
+		if(reset = '1') then
+			player1_score_i := (others => '0');
+			player2_score_i := (others => '0');
+		elsif(rising_edge(clk)) then
+			if(player1_score = "00") then
+				player1_LEDs_i <= "000";
+			elsif(player1_score = "01") then
+				player1_LEDs_i <= "001";
+			elsif(player1_score = "10") then
+				player1_LEDs_i <= "011";
+			elsif(player1_LEDs_i <= "11") then
+				player1_LEDs_i <= "111";
+			end if;
+			
+			if(player2_score = "00") then
+				player2_LEDs_i <= "000";
+			elsif(player2_score = "01") then
+				player2_LEDs_i <= "001";
+			elsif(player2_score = "10") then
+				player2_LEDs_i <= "011";
+			elsif(player2_LEDs_i <= "11") then
+				player2_LEDs_i <= "111";
+			end if;
+		end if;
 	end process
-		
+	
+	stim_LEDs			<= stim_LEDs_i;
+	player1_LEDs			<= player1_LEDs_i;
+	player2_LEDs			<= player2_LEDs_i;
+	seven_segment_signals	 	<= seven_segment_signals_i;
+	an_signals			<= an_signals_i;
 	
 	
