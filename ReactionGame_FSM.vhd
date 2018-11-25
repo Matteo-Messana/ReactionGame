@@ -6,14 +6,16 @@ use IEEE.NUMERIC_STD.ALL;
 entity reactionGameFSM is
 	PORT (  clk			: in STD_LOGIC;
 			reset		: in STD_LOGIC;
-			START_GAME 	: in STD_LOGIC;
+			start_game 	: in STD_LOGIC;
 			
-			PLAYER1_INPUT : in STD_LOGIC;
-			PLAYER2_INPUT : in STD_LOGIC;
+			player1_input 	: in STD_LOGIC;
+			player2_input 	: in STD_LOGIC;
 			
-			STIM_LED			: out STD_LOGIC_VECTOR(6 downto 0);
-			SEVEN_SEG_SIGNALS 	: out STD_LOGIC_VECTOR(7 downto 0);
-			AN_SIGNALS			: out STD_LOGIC_VECTOR(3 downto 0);
+			stim_LEDs			: out STD_LOGIC_VECTOR(6 downto 0);
+	      		player1_LEDs			: out STD_LOGIC_VECTOR(2 downto 0);
+	      		player2_LEDs			: out STD_LOGIC_VECTOR(2 downto 0);
+			seven_segment_signals	 	: out STD_LOGIC_VECTOR(7 downto 0);
+			an_signals			: out STD_LOGIC_VECTOR(3 downto 0)
 		);
 end reactionGameFSM;
 
@@ -26,17 +28,24 @@ architecture Behavioural of reactionGameFSM is
 	signal currentState, nextState : stateType;
 	
 	--declare internal signals here
+	signal delayClockDivider_reset, playClockDivider_reset : STD_LOGIC;
 	
 	--declare different components of FSM here
 	
-	FSM_Combinational_Logic: process( )
+	component delayClockDivider_FSM is 
+		PORT (
+			
+			
+		);
+	
+	FSM_Combinational_Logic: process(currentState)
 	begin 
 		case currentState is
 		
 		when idle => 
-			if(START_GAME = '0')
+			if(start_game = '0')
 				nextState = idle;
-			elsif(START_GAME = '1')
+			elsif(start_game = '1')
 				nextState = initializeScore;
 			end if;
 		
