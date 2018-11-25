@@ -10,8 +10,7 @@ entity downcounter is
     PORT ( clk    : in  STD_LOGIC;
            reset  : in  STD_LOGIC;
            enable : in  STD_LOGIC;
-           zero   : out STD_LOGIC;
-           --value  : out STD_LOGIC_VECTOR(WIDTH-1 downto 0)
+           zero   : out STD_LOGIC
          );
 end downcounter;
 
