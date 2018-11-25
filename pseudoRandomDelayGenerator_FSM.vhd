@@ -8,7 +8,7 @@ entity psuedoRandomDelayGenerator_FSM is
         clk     : in STD_LOGIC;
         reset   : in STD_LOGIC;
         enable  : in STD_LOGIC;
-        delay   : out STD_LOGIC_VECTOR (3 downto 0);  
+        delay   : out STD_LOGIC_VECTOR (3 downto 0)  
     );
   
   architecture behavioural of psuedoRandomDelayGenerator_FSM is
