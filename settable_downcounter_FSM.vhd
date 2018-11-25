@@ -11,8 +11,7 @@ entity settable_downcounter_FSM is
            reset  : in  STD_LOGIC;
            enable : in  STD_LOGIC;
            set_digit: in STD_LOGIC_VECTOR(3 downto 0);
-           zero   : out STD_LOGIC;
-           --value  : out STD_LOGIC_VECTOR(WIDTH-1 downto 0)
+           zero   : out STD_LOGIC
          );
 end settable_downcounter_FSM;
 
@@ -29,12 +28,11 @@ BEGIN
    
    count: process(clk,reset) begin
      if (rising_edge(clk)) then 
-       if (reset = '1') then 
-          current_count <= set_digit; --do we need this...?
+       if (reset = '1') then --this is going to need to be some soft reset from the FSM at the beginning of each game
+          current_count <= set_digit; 
           zero_i        <= '0';
        elsif (enable = '1') then 
           if (current_count = zeros) then
-            --current_count <= max_count;
             zero_i        <= '1';
           else 
             current_count <= current_count - '1'; -- continue counting down
@@ -46,7 +44,6 @@ BEGIN
      end if;
    end process;
    
-   value <= current_count; 
    zero  <= zero_i; 
    
 END Behavioral;
