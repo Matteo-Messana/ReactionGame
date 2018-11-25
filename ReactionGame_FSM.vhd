@@ -28,8 +28,16 @@ architecture Behavioural of reactionGameFSM is
 	signal currentState, nextState : stateType;
 	
 	--declare internal signals here
-	signal delayClockDivider_reset, playClockDivider_reset : STD_LOGIC;
-	
+	signal pseudoRandomDelayGenerator_enable_i, pseudoRandomDelayGenerator_reset_i : STD_LOGIC;
+	signal delay_i : STD_LOGIC_VECTOR(3 downto 0);
+	signal delayClockDivider_reset_i, delayClockDivider_enable_i, delayClockDivider_zero_i : STD_LOGIC;
+	signal playClockDivider_reset_i, playClockDivider_enable_i : STD_LOGIC;
+	signal secs_i, tenths_secs_i, hundreths_secs_i, thousandths_secs_i : STD_LOGIC_VECTOR(3 downto 0);
+	signal lapRegister_reset_i, lapRegister_load_i : STD_LOGIC;
+	signal lap_thousandths_secs_i, lap_hundredths_secs_i, lap_tenths_secs_i, lap_secs_i: STD_LOGIC_VECTOR(3 downto 0);
+	signal lapRegisterMUX_selector_i : STD_LOGIC;
+	signal digit_mux_thousandths_secs_i, digit_mux_hundredths_secs_i, digit_mux_tenths_secs_i, digit_mux_secs_i: STD_LOGIC_VECTOR(3 downto 0);
+
 	--declare different components of FSM here
 	
 	component delayClockDivider_FSM is 
@@ -127,6 +135,86 @@ architecture Behavioural of reactionGameFSM is
 			      LED9to15       :   out STD_LOGIC_VECTOR(6 downto 0)
 		       );
 	end component;
+		
+	BEGIN
+	
+	DELAY_GEN: psuedoRandomDelayGenerator_FSM
+		PORT MAP(
+				clk     => clk,
+				reset   => pseudoRandomDelayGenerator_reset_i,
+				enable  => pseudoRandomDelayGenerator_enable_i,
+				delay   => delay_i
+			);	
+		
+	DELAY_CD: delayClockDivider_FSM
+		PORT MAP(
+				clk      => clk,
+				reset    => delayClockDivider_reset_i,
+				enable   => delayClockDivider_enable_i,
+				FSM_enable => delayClockDivider_zero_i,
+				set_digit => delay_i
+			);
+		
+	PLAY_CD: playClockDivider_FSM
+		PORT MAP(
+				clk      		=> clk,
+			   	reset    		=> playClockDivider_reset_i,
+			   	enable   		=> playClockDivider_enable_i,
+			   	secs 			=> secs_i,
+			   	tenths_secs 		=> tenths_secs_i,
+			  	hundredths_secs 	=> hundredths_secs_i,
+			   	thousandths_secs 	=> thousandths_secs_i
+			);
+		
+	LAP_REG: lapRegister_FSM
+		PORT MAP(
+				clk			=> clk,
+			   	reset			=> lapRegister_reset_i,
+			   	load			=> lapRegister_load_i,
+			   	thousandths_secs	=> thousandths_secs_i,
+			   	hundredths_secs		=> hundredths_secs_i,
+			   	tenths_secs 		=> tenths_secs_i,
+			   	secs			=> secs_i,
+			   	lap_thousandths_secs 	=> lap_thousandths_secs_i,
+			   	lap_hundredths_secs	=> lap_hundredths_secs_i,
+			   	lap_tenths_secs 	=> lap_tenths_secs_i,
+			   	lap_secs:		=> lap_secs_i
+			);
+	LAP_MUX: lapRegisterMUX_FSM
+		PORT MAP(
+				selector			=> lapRegisterMUX_selector_i,
+			   	thousandths_secs		=> thousandths_secs_i,
+			   	hundredths_secs			=> hundredths_secs_i,
+			   	tenths_secs			=> tenths_secs_i,
+			   	secs				=> secs_i,
+			   	lap_thousandths_secs		=> lap_thousandths_secs_i,
+			   	lap_hundredths_secs		=> lap_hundredths_secs_i,
+			   	lap_tenths_secs			=> lap_tenths_secs_i,
+			   	lap_secs			=> lap_secs_i
+			   	digit_mux_thousandths_secs	=> digit_mux_thousandths_secs_i,
+			   	digit_mux_hundredths_secs	=> digit_mux_hundredths_secs_i,
+			   	digit_mux_tenths_secs		=> digit_mux_tenths_secs_i,
+			   	digit_mux_secs			=> digit_mux_secs_i,
+			);
+		
+	DIGIT_MUX: digitMux_FSM
+		PORT MAP(
+			
+			);
+		
+	SS_DECODER: seven_segment_decoder
+		PORT MAP(
+			
+			);
+		
+	SS_SELECTOR: seven_segment_selector
+		PORT MAP(
+			
+			);
+	STIM: stimulus
+		PORT MAP(
+			
+			);
 		
 	FSM_Combinational_Logic: process(currentState)
 	begin 
