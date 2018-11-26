@@ -30,7 +30,7 @@ PORT    (
 end component;
 
 
-component settable_downcounter is
+component settableDowncounter is
 GENERIC (
              period  : integer := 4;
              WIDTH   : integer := 4
@@ -58,7 +58,7 @@ begin
                     zero => seconds --sends to settable downcounter
                  );
                  
-        SecondsClock: settable_downcounter 
+        SecondsClock: settableDowncounter 
                  GENERIC MAP (
                                  period => (16), --can count down 16 seconds (F to 0)
                                  WIDTH => 4
