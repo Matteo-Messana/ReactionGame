@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity settable_downcounter_FSM is
+entity settableDowncounter_FSM is
   Generic ( period : integer:= 4;       
             WIDTH  : integer:= 3
 		  );
@@ -13,9 +13,9 @@ entity settable_downcounter_FSM is
            set_digit: in STD_LOGIC_VECTOR(3 downto 0);
            zero   : out STD_LOGIC
          );
-end settable_downcounter_FSM;
+end settableDowncounter_FSM;
 
-architecture Behavioral of settable_downcounter_FSM is
+architecture Behavioral of settableDowncounter_FSM is
   signal current_count : STD_LOGIC_VECTOR(WIDTH-1 downto 0);
 
   signal zero_i        : STD_LOGIC; 
