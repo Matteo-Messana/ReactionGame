@@ -1,15 +1,15 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity seven_segment_decoder is
+entity sevenSegmentDecoder_FSM is
     PORT ( 
            seven_segment_signals : out STD_LOGIC_VECTOR(7 downto 0);
            dp_in : in  STD_LOGIC;
            data  : in  STD_LOGIC_VECTOR (3 downto 0)
          );
-end seven_segment_decoder;
+end sevenSegmentDecoder_FSM;
 
-architecture Behavioral of seven_segment_decoder is
+architecture Behavioral of sevenSegmentDecoder_FSM is
 
    signal decoded_bits : STD_LOGIC_VECTOR(6 downto 0);
 
