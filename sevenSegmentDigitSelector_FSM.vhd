@@ -2,15 +2,15 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity seven_segment_digit_selector is
+entity sevenSegmentDigitSelector_FSM is
     PORT ( clk          : in  STD_LOGIC;
            digit_select : out STD_LOGIC_VECTOR (3 downto 0);
            an_outputs   : out STD_LOGIC_VECTOR (3 downto 0);
            reset        : in  STD_LOGIC
 		 );
-end seven_segment_digit_selector;
+end sevenSegmentDigitSelector_FSM;
 
-architecture Behavioral of seven_segment_digit_selector is
+architecture Behavioral of sevenSegmentDigitSelector_FSM is
    signal d, q  : STD_LOGIC_VECTOR(3 downto 0);
    signal count : STD_LOGIC_VECTOR(16 downto 0);
 BEGIN
