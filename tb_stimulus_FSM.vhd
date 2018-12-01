@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity tb_stimulus is
 end tb_stimulus;
 
-architecture behavioural of tb_stimulus
+architecture behavioural of tb_stimulus is
 
 component stimulus is
        PORT ( 
@@ -29,9 +29,9 @@ PORT MAP(
 		stim_proc:process
 		begin
 		wait for 50 ns;
-		enable => '1';
+		enable <= '1';
 		wait for 200 ns;
-		enable => '0';
+		enable <= '0';
 		wait;
 		end process;
 		

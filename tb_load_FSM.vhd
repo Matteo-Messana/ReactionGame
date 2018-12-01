@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity tb_load_FSM is
 end tb_load_FSM;
 
-architecture behaviour of tb_load_FSM
+architecture behaviour of tb_load_FSM is
   component load_FSM 
     PORT (
            input:        in STD_LOGIC;

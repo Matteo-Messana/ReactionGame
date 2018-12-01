@@ -7,13 +7,13 @@ end tb_sevenSegmentDigitSelector_FSM;
 
 architecture Behavioral of tb_sevenSegmentDigitSelector_FSM is
 
-entity sevenSegmentDigitSelector_FSM is
+component sevenSegmentDigitSelector_FSM is
     PORT ( clk          : in  STD_LOGIC;
            digit_select : out STD_LOGIC_VECTOR (3 downto 0);
            an_outputs   : out STD_LOGIC_VECTOR (3 downto 0);
            reset        : in  STD_LOGIC
 		 );
-end sevenSegmentDigitSelector_FSM;
+end component;
 
 --Inputs
 signal clk : STD_LOGIC := '0';
@@ -32,7 +32,7 @@ uut:sevenSegmentDigitSelector_FSM
 PORT MAP(
 			clk => clk,
 			digit_select => digit_select,
-			an_outputs => an_outputs
+			an_outputs => an_outputs,
 			reset => reset
 			);
 			
@@ -48,14 +48,11 @@ PORT MAP(
 		stim_proc: process
 			begin	
 				-- hold reset state for 100 ns.
-			reset_i <= '0';
+			reset <= '0';
 			wait for 100 ns;   
-			reset_i <= '1';
+			reset <= '1';
 			wait for clk_period*10;
-			reset_i <= '0';
-			-- insert stimulus here 
-
-			wait for clk_period*10;
+			reset <= '0';
 			wait;
 		end process;
 

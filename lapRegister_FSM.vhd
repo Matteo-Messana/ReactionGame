@@ -19,7 +19,7 @@ end lapRegister_FSM;
 architecture Behavioral of lapRegister_FSM is
     
 -- Internal signals
-    signal load_i : out STD_LOGIC;
+    signal load_i : STD_LOGIC;
     
     component load_FSM is
     PORT(   input:        in STD_LOGIC;

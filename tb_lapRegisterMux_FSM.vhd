@@ -4,7 +4,7 @@ USE IEEE.STD_LOGIC_1164.ALL;
 entity tb_lapRegisterMux_FSM is
 end tb_lapRegisterMux_FSM;
 
-architecture behaviour of tb_lapRegister is
+architecture behaviour of tb_lapRegisterMux_FSM is
   
   component lapRegisterMux_FSM
   PORT( 
@@ -25,21 +25,21 @@ architecture behaviour of tb_lapRegister is
    end component;
    
    --Inputs
-           selector:						STD_LOGIC := '0';
-           thousandths_secs:				STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
-           hundredths_secs:					STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
-           tenths_secs:						STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
-           secs:              				STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
-           lap_thousandths_secs:    		STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
-           lap_hundredths_secs:     		STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
-           lap_tenths_secs:         		STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
-           lap_secs:          				STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal       selector:						STD_LOGIC := '0';
+    signal       thousandths_secs:				STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal       hundredths_secs:					STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal        tenths_secs:						STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal        secs:              				STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal        lap_thousandths_secs:    		STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal        lap_hundredths_secs:     		STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal        lap_tenths_secs:         		STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal        lap_secs:          				STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
     
    --Outputs
-           digit_mux_thousandths_secs :    STD_LOGIC_VECTOR(3 downto 0);
-           digit_mux_hundredths_secs :   	STD_LOGIC_VECTOR(3 downto 0);
-           digit_mux_tenths_secs :   		STD_LOGIC_VECTOR(3 downto 0);
-           digit_mux_secs :   				STD_LOGIC_VECTOR(3 downto 0);
+    signal        digit_mux_thousandths_secs :    STD_LOGIC_VECTOR(3 downto 0);
+    signal       digit_mux_hundredths_secs :   	STD_LOGIC_VECTOR(3 downto 0);
+    signal        digit_mux_tenths_secs :   		STD_LOGIC_VECTOR(3 downto 0);
+    signal        digit_mux_secs :   				STD_LOGIC_VECTOR(3 downto 0);
    
    BEGIN
     uut: lapRegisterMux_FSM
@@ -71,7 +71,7 @@ architecture behaviour of tb_lapRegister is
       lap_hundredths_secs <= "1001";
       lap_tenths_secs <= "1001";
       lap_secs <= "1001";
-      waut for 50ns;
+      wait for 50ns;
       
       selector <= '1';
       wait for 250ns;

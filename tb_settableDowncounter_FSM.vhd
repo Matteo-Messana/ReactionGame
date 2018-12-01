@@ -6,19 +6,20 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity tb_settableDowncounter_FSM is
 end tb_settableDowncounter_FSM;
 
-component tb_settableDowncounter_FSM is
+architecture behavioural of tb_settableDowncounter_FSM is
+
+component settableDowncounter_FSM is
   Generic ( period : integer:= 4;       
-            WIDTH  : integer:= 3
+            WIDTH  : integer:= 4
 		  );
     PORT ( clk    : in  STD_LOGIC;
            reset  : in  STD_LOGIC;
            enable : in  STD_LOGIC;
            set_digit: in STD_LOGIC_VECTOR(3 downto 0);
-           zero   : out STD_LOGIC
+           zero   : out STD_LOGIC;
+           value  : out STD_LOGIC_VECTOR(WIDTH-1 downto 0)
          );
-end tb_settableDowncounter_FSM;
-
-architecture Behavioral of settableDowncounter_FSM is
+end component;
 
 --Inputs
  constant period : integer := 4;
@@ -30,6 +31,7 @@ architecture Behavioral of settableDowncounter_FSM is
  
  --Outputs
  signal zero : STD_LOGIC;
+ signal value  : STD_LOGIC_VECTOR(WIDTH-1 downto 0);
  
  --CLK Period
  constant clk_period : time := 20ns;
@@ -37,11 +39,16 @@ architecture Behavioral of settableDowncounter_FSM is
  BEGIN
  
  uut: settableDowncounter_FSM
+ GENERIC MAP(
+            period => (16),
+            WIDTH => 4
+            )
  PORT MAP(
 		clk => clk,
         reset => reset,
         enable => enable,
         set_digit => set_digit,
+        value => value,
         zero => zero
 		);
 		
@@ -57,15 +64,17 @@ architecture Behavioral of settableDowncounter_FSM is
 stim_proc: process
         begin
         
+            set_digit <= "1111";
+            wait for clk_period*2;
             reset <= '1';
-            wait for clk_period*2;
+            wait for clk_period;
             reset <= '0';
-            wait for clk_period*2;
-            set_digit <= "1001";
+            wait for clk_period;
             enable <= '1';
             wait;
         end process;		
 			
+end;
 			
 			
  

@@ -5,13 +5,14 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity settableDowncounter_FSM is
   Generic ( period : integer:= 4;       
-            WIDTH  : integer:= 3
+            WIDTH  : integer:= 4
 		  );
     PORT ( clk    : in  STD_LOGIC;
            reset  : in  STD_LOGIC;
            enable : in  STD_LOGIC;
            set_digit: in STD_LOGIC_VECTOR(3 downto 0);
            zero   : out STD_LOGIC
+           --value  : out STD_LOGIC_VECTOR(WIDTH-1 downto 0)
          );
 end settableDowncounter_FSM;
 
@@ -33,6 +34,7 @@ BEGIN
           zero_i        <= '0';
        elsif (enable = '1') then 
           if (current_count = zeros) then
+            current_count <= set_digit;
             zero_i        <= '1';
           else 
             current_count <= current_count - '1'; -- continue counting down
@@ -45,5 +47,6 @@ BEGIN
    end process;
    
    zero  <= zero_i; 
+  -- value <= current_count;
    
 END Behavioral;

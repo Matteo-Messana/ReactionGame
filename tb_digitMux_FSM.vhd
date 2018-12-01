@@ -43,7 +43,7 @@ architecture behaviour of tb_digitMux_FSM is
       
       thousandths_secs <= "1101";
       wait for 50ns;
-      hundreths_secs <= "1001";
+      hundredths_secs <= "1001";
       wait for 50ns;
       tenths_secs <= "0010";
       wait for 50ns;
@@ -59,6 +59,6 @@ architecture behaviour of tb_digitMux_FSM is
       selector <= "1000";
       wait for 100ns;
 
-    end process
+    end process;
     
 END;

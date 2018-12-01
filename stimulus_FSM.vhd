@@ -16,7 +16,7 @@ process(enable)
 begin
     if(enable = '0') then
         LED9to15  <= (others => '0');
-    elseif(enable = '1') then
+    elsif(enable = '1') then
         LED9to15  <= (others => '1');
     end if;
 end process;

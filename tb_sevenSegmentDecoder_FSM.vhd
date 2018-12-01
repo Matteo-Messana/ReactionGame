@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity tb_sevenSegmentDecoder_FSM is
 end tb_sevenSegmentDecoder_FSM;
 
-architecture Behavioral of sevenSegmentDecoder_FSM is
+architecture Behavioral of tb_sevenSegmentDecoder_FSM is
 
 component sevenSegmentDecoder_FSM is
     PORT ( 
@@ -32,7 +32,7 @@ PORT MAP(
 		
 stim_proc:process
 begin
-				  dp_in_i <= '0';
+				  dp_in <= '0';
 				  wait for 100 ns;
 				  data <= "0000"; -- 0
 				  wait for 50 ns;
@@ -64,7 +64,7 @@ begin
                   wait for 50 ns;
                   data <= "1111"; -- F
                   wait for 50 ns;
-                  dp_in_i <= '1';
+                  dp_in <= '1';
                   wait for 50 ns;
                   wait;
                end process;

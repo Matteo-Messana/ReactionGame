@@ -92,7 +92,7 @@ secsClock: upcounter_FSM
    PORT MAP (
                clk    => clk,
                reset  => reset,
-               enable => tenths_zero_zero,
+               enable => tenths_zero,
                zero   => open, 
                value  => secs_value
             );
@@ -103,3 +103,4 @@ hundredths_secs 	<= hundredths_value;
 tenths_secs 		<= tenths_value;
 secs 			<= secs_value;
 			
+END;

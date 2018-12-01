@@ -31,9 +31,9 @@ BEGIN
          when "1001" => decoded_bits <= "1111011"; -- 9  --
 
          when "1010" => decoded_bits <= "1110111"; -- A -- don't need hexadecimal display values for stopwatch
-         when "1011" => decoded_bits <= "1111111"; -- B -- don't need hexadecimal display values for stopwatch
-         when "1100" => decoded_bits <= "1001110"; -- C -- don't need hexadecimal display values for stopwatch
-         when "1101" => decoded_bits <= "1111110"; -- D -- don't need hexadecimal display values for stopwatch
+         when "1011" => decoded_bits <= "1100111"; -- P -- don't need hexadecimal display values for stopwatch
+         when "1100" => decoded_bits <= "0001110"; -- L -- don't need hexadecimal display values for stopwatch
+         when "1101" => decoded_bits <= "0111011"; -- Y -- don't need hexadecimal display values for stopwatch
          when "1110" => decoded_bits <= "1001111"; -- E -- don't need hexadecimal display values for stopwatch
          when "1111" => decoded_bits <= "1000111"; -- F -- don't need hexadecimal display values for stopwatch
          when others => decoded_bits <= "0000000"; -- all LEDS off

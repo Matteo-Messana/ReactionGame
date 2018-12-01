@@ -23,19 +23,19 @@ architecture behaviour of tb_lapRegister_FSM is
    end component;
    
    --Inputs
-           clk:						 STD_LOGIC := '0';
-           reset:					 STD_LOGIC := '0';
-           load:					 STD_LOGIC := '0';
-           thousandths_secs:         STD_LOGIC_VECTOR(3 downto 0) := (others=> '0');
-           hundredths_secs:			 STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
-           tenths_secs :			 STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
-           secs:					 STD_LOGIC_VECTOR(3 downto 0) := (others => '0'); 
+    signal       clk:					 STD_LOGIC := '0';
+    signal       reset:					 STD_LOGIC := '0';
+    signal       load:					 STD_LOGIC := '0';
+    signal       thousandths_secs:       STD_LOGIC_VECTOR(3 downto 0) := (others=> '0');
+    signal       hundredths_secs:		 STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal       tenths_secs :			 STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal       secs:					 STD_LOGIC_VECTOR(3 downto 0) := (others => '0'); 
    
    --Outputs
-            lap_thousandths_secs :	STD_LOGIC_VECTOR(3 downto 0);
-            lap_hundredths_secs :	STD_LOGIC_VECTOR(3 downto 0);
-            lap_tenths_secs :		STD_LOGIC_VECTOR(3 downto 0);
-            lap_secs:				STD_LOGIC_VECTOR(3 downto 0);
+    signal        lap_thousandths_secs : STD_LOGIC_VECTOR(3 downto 0);
+    signal        lap_hundredths_secs :	 STD_LOGIC_VECTOR(3 downto 0);
+    signal        lap_tenths_secs :		 STD_LOGIC_VECTOR(3 downto 0);
+    signal        lap_secs:				 STD_LOGIC_VECTOR(3 downto 0);
             
    -- Clock period definition
             constant clk_period : time := 10 ns;

@@ -5,12 +5,13 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity downcounter is
   Generic ( period: integer:= 4;       
-            WIDTH  : integer:= 3
+            WIDTH  : integer:= 4
 		  );
     PORT ( clk    : in  STD_LOGIC;
            reset  : in  STD_LOGIC;
            enable : in  STD_LOGIC;
            zero   : out STD_LOGIC
+          -- value_check_d : out STD_LOGIC_VECTOR (3 downto 0)
          );
 end downcounter;
 
@@ -42,8 +43,8 @@ BEGIN
        end if;
      end if;
    end process;
-   
-   value <= current_count; 
+  
    zero  <= zero_i; 
+  -- value_check_d <= current_count;
    
 END Behavioral;

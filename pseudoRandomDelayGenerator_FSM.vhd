@@ -10,6 +10,7 @@ entity psuedoRandomDelayGenerator_FSM is
         enable  : in STD_LOGIC;
         delay   : out STD_LOGIC_VECTOR (3 downto 0)  
     );
+end psuedoRandomDelayGenerator_FSM;
   
   architecture behavioural of psuedoRandomDelayGenerator_FSM is
     

@@ -54,6 +54,22 @@ BEGIN
 		reset <= '0';
 		wait for 20ns;
 		enable <= '1';
+		wait for clk_period;
+		enable <= '0';
+		wait for 5*clk_period;
+		enable <= '1';
+        wait for clk_period;
+        enable <= '0';
+        wait for 5*clk_period;
+        enable <= '1';
+        wait for clk_period;
+        enable <= '0';
+        wait for 5*clk_period;
+        enable <= '1';
+        wait for clk_period;
+        enable <= '0';
+        wait for 5*clk_period;
+        wait;
 		
 	end process;
 	
