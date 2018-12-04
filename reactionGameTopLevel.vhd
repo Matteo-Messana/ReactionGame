@@ -79,8 +79,8 @@ architecture Behavioral of reactionGameTopLevel is
 	signal buzzer_signal_i : STD_LOGIC;
 	signal buzzer_enable_i : STD_LOGIC;
 	signal buzzer_zero_i :STD_LOGIC;
-	signal enableP2_i ,enableP1_i : STD_LOGIC;
-	signal P1Buzz_i, P2Buzz_i : STD_LOGIC;
+	--signal enableP2_i ,enableP1_i : STD_LOGIC;
+	--signal P1Buzz_i, P2Buzz_i : STD_LOGIC;
 
     component reactionGame_FSM is
         PORT (
@@ -96,9 +96,6 @@ architecture Behavioral of reactionGameTopLevel is
                 
                 player1_win_enable : in STD_LOGIC;
                 player2_win_enable : in STD_LOGIC;
-                
-                P1Buzz : in STD_LOGIC;
-                P2Buzz : in STD_LOGIC;
                     
                 pseudoRandomDelaygenerator_reset : out STD_LOGIC;
                 delayClockDivider_reset : out STD_LOGIC;
@@ -120,10 +117,7 @@ architecture Behavioral of reactionGameTopLevel is
                 lapRegisterMUX_selector : out STD_LOGIC; 
                 
                 winP1_LED3 : out STD_LOGIC;
-                winP2_LED7 : out STD_LOGIC;
-                
-                enableP1 : out STD_LOGIC;
-                enableP2 : out STD_LOGIC
+                winP2_LED7 : out STD_LOGIC
              );
     end component;
     
@@ -235,9 +229,10 @@ architecture Behavioral of reactionGameTopLevel is
                 player2_LEDs            : out STD_LOGIC_VECTOR(2 downto 0);
                 
                 player1_win_enable           : out STD_LOGIC;
-                player2_win_enable           : out STD_LOGIC
+                player2_win_enable           : out STD_LOGIC;
                 
-                --buzzer_enable           : out STD_LOGIC
+                player1_score           : out STD_LOGIC_VECTOR(1 downto 0);
+                player2_score           : out STD_LOGIC_VECTOR(1 downto 0)
         );
     end component;
     
@@ -307,9 +302,6 @@ REACT_FSM: reactionGame_FSM
                 
                 player1_win_enable =>  player1_win_enable_i,
                 player2_win_enable =>  player2_win_enable_i,
-                
-                P1Buzz  => P1Buzz_i,
-                P2Buzz  => P2Buzz_i,
                             
                 pseudoRandomDelaygenerator_reset => pseudoRandomDelaygenerator_reset_i,
                 delayClockDivider_reset => delayClockDivider_reset_i,
@@ -323,7 +315,6 @@ REACT_FSM: reactionGame_FSM
                 letterDigitMUX_select => letterDigitMUX_select_i,
                 buzzer_enable => buzzer_enable_i,
                 
-                --scoreKeeper_reset => scoreKeeper_reset_i,
                 player1_score_enable => player1_score_enable_i,
                 player2_score_enable => player2_score_enable_i,
                 
@@ -331,10 +322,7 @@ REACT_FSM: reactionGame_FSM
                 lapRegisterMUX_selector => lapRegisterMUX_selector_i,
                 
                 winP1_LED3 => P1Win_LED_i,
-                winP2_LED7 => P2Win_LED_i,
-                
-                enableP1 => enableP1_i,
-                enableP2 => enableP2_i
+                winP2_LED7 => P2Win_LED_i
                 );
 
 DELAY_GEN: psuedoRandomDelayGenerator_FSM
@@ -436,8 +424,9 @@ DELAY_GEN: psuedoRandomDelayGenerator_FSM
 	            player1_LEDs           => player1_LEDs_i,
 	            player2_LEDs           => player2_LEDs_i,
 	            player1_win_enable     => player1_win_enable_i,
-	            player2_win_enable     => player2_win_enable_i
-	            --buzzer_enable          => buzzer_enable_i
+	            player2_win_enable     => player2_win_enable_i,
+	            player1_score          => open,
+	            player2_score          => open
 	           );
 	           
 	  LET_MUX: letterMUX_FSM
@@ -473,34 +462,7 @@ DELAY_GEN: psuedoRandomDelayGenerator_FSM
 	                 enable_flipflop => buzzer_zero_i,
 	                 buzzer_signal => buzzer_signal_i
 	                ); 
-	                
-	     FINAL_BUZZ_P1: upcounter_FSM
-                    GENERIC MAP(
-                                period => (3),
-                                WIDTH => 2
-                                )
-                    PORT MAP    (
-                                clk => clk,
-                                reset => reset,
-                                enable => enableP1_i,
-                                zero => P1Buzz_i,
-                                value => open
-                                );
-                                
-                    FINAL_BUZZ_P2: upcounter_FSM
-                                GENERIC MAP(
-                                            period => (3),
-                                            WIDTH => 2
-                                            )
-                                PORT MAP    (
-                                            clk => clk,
-                                            reset => reset,
-                                            enable => enableP2_i,
-                                            zero => P2Buzz_i,
-                                            value => open
-                                            );
 	                 
-	    
      stim_LED9      <= stim_LEDs_i(0);
      stim_LED10     <= stim_LEDs_i(1);
      stim_LED11     <= stim_LEDs_i(2);
@@ -534,8 +496,10 @@ DELAY_GEN: psuedoRandomDelayGenerator_FSM
      AN3            <= an_outputs_i(2);
      AN4            <= an_outputs_i(3);	    
      
-     Buzzer_Ring          <= buzzer_signal_i;       
-     DP_PLACE: process(clk)
+     Buzzer_Ring          <= buzzer_signal_i;  
+     
+          
+     DP_PLACE: process(clk) --takes care of decimal point when there is text vs when there are times being displayed
      begin 
         if(letterDigitMUX_select_i = '1') then   
         dp_in_i        <= an_outputs_i(0);

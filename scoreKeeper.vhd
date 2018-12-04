@@ -15,21 +15,23 @@ entity scoreKeeper is
             player2_LEDs            : out STD_LOGIC_VECTOR(2 downto 0);
             
             player1_win_enable           : out STD_LOGIC;
-            player2_win_enable           : out STD_LOGIC
-            --buzzer_enable           : out STD_LOGIC
+            player2_win_enable           : out STD_LOGIC;
+            
+            player1_score           : out STD_LOGIC_VECTOR(1 downto 0);
+            player2_score           : out STD_LOGIC_VECTOR(1 downto 0)
     );
 end scoreKeeper;
 
 architecture Behavioral of scoreKeeper is
 
-signal player1_score : STD_LOGIC_VECTOR(1 downto 0);
-signal player2_score : STD_LOGIC_VECTOR(1 downto 0);
+signal player1_score_i : STD_LOGIC_VECTOR(1 downto 0); --need to map this to some new external for VGA
+signal player2_score_i : STD_LOGIC_VECTOR(1 downto 0); --need to map this to some new external for VGA
 
 signal player1_LEDs_i            : STD_LOGIC_VECTOR(2 downto 0);
 signal player2_LEDs_i            : STD_LOGIC_VECTOR(2 downto 0);
 
-signal player1_win_enable_i      :STD_LOGIC;
-signal player2_win_enable_i      :STD_LOGIC;
+signal player1_win_enable_i      :STD_LOGIC; --Eventually will drive the endgame functionality of the VGA display
+signal player2_win_enable_i      :STD_LOGIC; --Eventually will drive the endgame functionality of the VGA display
 
 
 begin
@@ -37,56 +39,56 @@ begin
 updatePlayerScore : process(reset, clk, player1_score_enable, player2_score_enable)
     begin
         if(reset = '1') then
-            player1_score <= (others => '0');
-            player2_score <= (others => '0');
+            player1_score_i <= (others => '0');
+            player2_score_i <= (others => '0');
         elsif(rising_edge(clk)) then
             if(player1_score_enable = '1') then
-                player1_score <= player1_score + '1';
+                player1_score_i <= player1_score_i + '1';
             elsif(player2_score_enable = '1') then 
-                player2_score <= player2_score + '1';
+                player2_score_i <= player2_score_i + '1';
             end if;
         end if;
 end process;
 
-displayPlayerScore : process(clk, player1_score, player2_score) --just gonna mark this in case it was a bad idea... internals on sensitivity list?
+displayPlayerScore : process(clk, player1_score_i, player2_score_i) --just gonna mark this in case it was a bad idea... internals on sensitivity list?
 	begin 
 		if(rising_edge(clk)) then
-			if(player1_score = "00") then
+			if(player1_score_i = "00") then
 				player1_LEDs_i <= "000";
 				--buzzer_enable <= '0';
-			elsif(player1_score = "01") then
+			elsif(player1_score_i = "01") then
 				player1_LEDs_i <= "001";
-			elsif(player1_score = "10") then
+			elsif(player1_score_i = "10") then
 				player1_LEDs_i <= "011";
-			elsif(player1_score <= "11") then
+			elsif(player1_score_i <= "11") then
 				player1_LEDs_i <= "111";
 			end if;
 			
-			if(player2_score = "00") then
+			if(player2_score_i = "00") then
 				player2_LEDs_i <= "000";
 				--buzzer_enable <= '0';
-			elsif(player2_score = "01") then
+			elsif(player2_score_i = "01") then
 				player2_LEDs_i <= "001";
-			elsif(player2_score = "10") then
+			elsif(player2_score_i = "10") then
 				player2_LEDs_i <= "011";
-			elsif(player2_score <= "11") then
+			elsif(player2_score_i <= "11") then
 				player2_LEDs_i <= "111";
 			end if;
 		end if;
 	end process;
 	
-winnerEnable: process(clk, reset, player1_score, player2_score)
+winnerEnable: process(clk, reset, player1_score_i, player2_score_i)
     begin
         if(reset = '1') then
             player1_win_enable_i  <= '0';
             player2_win_enable_i  <= '0';
             --buzzer_enable <= '0';
         elsif(falling_edge(clk)) then
-            if(player1_score = "11") then
+            if(player1_score_i = "11") then
                 player2_win_enable_i <= '0';  
                 player1_win_enable_i <= '1';
                 --buzzer_enable <= '1';
-             elsif(player2_score = "11") then 
+             elsif(player2_score_i = "11") then 
                 player2_win_enable_i <= '1';
                 player1_win_enable_i <= '0';
                 --buzzer_enable <= '1';
@@ -102,5 +104,8 @@ player2_LEDs <= player2_LEDs_i;
 
 player1_win_enable <= player1_win_enable_i;
 player2_win_enable <= player2_win_enable_i;
+
+player1_score <= player1_score_i;
+player2_score <= player2_score_i;
 
 end Behavioral;
