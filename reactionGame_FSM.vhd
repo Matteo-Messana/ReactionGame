@@ -16,6 +16,9 @@ entity reactionGame_FSM is
 	      		 
                  player1_win_enable      : in STD_LOGIC;
                  player2_win_enable      : in STD_LOGIC;
+                 
+                 P1Buzz : in STD_LOGIC;
+                 P2Buzz : in STD_LOGIC;
                  			
                  pseudoRandomDelaygenerator_reset : out STD_LOGIC;
                  delayClockDivider_reset : out STD_LOGIC;
@@ -36,7 +39,10 @@ entity reactionGame_FSM is
                  lapRegisterMUX_selector : out STD_LOGIC;
                  
                  winP1_LED3 : out STD_LOGIC;
-                 winP2_LED7 : out STD_LOGIC
+                 winP2_LED7 : out STD_LOGIC;
+                 
+                 enableP1 : out STD_LOGIC;
+                 enableP2 : out STD_LOGIC
                  
 		);
 end reactionGame_FSM;
@@ -142,7 +148,7 @@ architecture Behavioural of reactionGame_FSM is
 						
 	FSM_State_Register : process(reset, clk)
 	begin
-		if (reset = '1' or not(start_game) = '1') then
+		if reset = '1' then
 			currentState <= idle;
 		elsif rising_edge(clk) then
 			currentState <= nextState;
@@ -215,8 +221,10 @@ architecture Behavioural of reactionGame_FSM is
 	begin
 	   if(currentState = updatePlayer1Score) then
 	       player1_score_enable <= '1';
+	       enableP1 <= '1';
 	   else
 	       player1_score_enable <= '0';
+	       enableP1 <= '0';
 	   end if;
 	end process;
 	
@@ -224,8 +232,10 @@ architecture Behavioural of reactionGame_FSM is
     begin
        if(currentState = updatePlayer2Score) then
            player2_score_enable <= '1';
+           enableP2 <= '1';
        else
            player2_score_enable <= '0';
+           enableP2 <= '0';
        end if;
     end process;
 	

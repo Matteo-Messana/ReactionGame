@@ -49,7 +49,7 @@ PORT    (
 end component;
 
 begin     
-        oneHertzClock: downcounter 
+        oneHertzClock: downcounter
         GENERIC MAP ( 
                         period => (100000000), --one second downcounter (as used in lab 2 & 3)
                         WIDTH => 28

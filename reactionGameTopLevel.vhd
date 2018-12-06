@@ -3,13 +3,13 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity reactionGameTopLevel is
     PORT(
-            clk		           : in STD_LOGIC;
-            reset               : in STD_LOGIC;
-            start_game          : in STD_LOGIC;
+            clk		           : in STD_LOGIC; --On Board
+            reset               : in STD_LOGIC; --SW0 (**********NEED TO CHANGE IN THE VGA MODULE MAPPING**********)
+            start_game          : in STD_LOGIC; --SW1 (**********NEED TO LINK WITH THE START FUNCTIONALITY IN VGA MODULE**********)
             
-            player1_input       : in STD_LOGIC;
-            player2_input       : in STD_LOGIC;
-            next_game_input     : in STD_LOGIC;
+            player1_input       : in STD_LOGIC; --Right Button
+            player2_input       : in STD_LOGIC; --Left Button
+            next_game_input     : in STD_LOGIC; --Centre Button
             
             stim_LED9               : out STD_LOGIC;
             stim_LED10              : out STD_LOGIC;
@@ -44,7 +44,16 @@ entity reactionGameTopLevel is
             AN3                     : out STD_LOGIC;
             AN4                     : out STD_LOGIC;
             
-            Buzzer_Ring                  : out STD_LOGIC
+            Buzzer_Ring                  : out STD_LOGIC;
+            
+            --System Outputs from VGA Display Module--
+            VGA_hsync                   : out STD_LOGIC;
+            VGA_vsync                   : out STD_LOGIC;
+            VGA_red: out STD_LOGIC_VECTOR(3 downto 0);
+            VGA_green: out STD_LOGIC_VECTOR(3 downto 0);
+            VGA_blue: out STD_LOGIC_VECTOR(3 downto 0)
+            
+            --TODO: ADD hsync, vsync, red, green, blue as OUTPUTS to this system (DONE)
 
     );
 end reactionGameTopLevel;
@@ -79,8 +88,22 @@ architecture Behavioral of reactionGameTopLevel is
 	signal buzzer_signal_i : STD_LOGIC;
 	signal buzzer_enable_i : STD_LOGIC;
 	signal buzzer_zero_i :STD_LOGIC;
-	--signal enableP2_i ,enableP1_i : STD_LOGIC;
-	--signal P1Buzz_i, P2Buzz_i : STD_LOGIC;
+	signal start_signal_i: STD_LOGIC;
+	signal win_signal_i:STD_LOGIC;
+	signal title_buzz : STD_LOGIC;
+	signal win_buzz : STD_LOGIC;
+	signal title_song_i : STD_LOGIC;
+	signal win_song_i : STD_LOGIC;
+	signal stim_song_i : STD_LOGIC;
+	signal title_i : STD_LOGIC;
+	signal stim_song_reset : STD_LOGIC;
+	signal win_song_reset : STD_LOGIC;
+	signal win_i : STD_LOGIC;
+	
+    --Internal Signals from VGA Module
+    signal red_i, green_i, blue_i : STD_LOGIC_VECTOR(3 downto 0);
+    signal vsync_i, hsync_i : STD_LOGIC;
+    signal player_1_score_i, player_2_score_i : STD_LOGIC_VECTOR(1 downto 0);
 
     component reactionGame_FSM is
         PORT (
@@ -285,8 +308,61 @@ architecture Behavioral of reactionGameTopLevel is
                    value  : out STD_LOGIC_VECTOR(WIDTH-1 downto 0)
                 );
      end component;
-	
+     
+     component vga_module is
+         Port (  clk : in  STD_LOGIC;
+                 reset: in STD_LOGIC; --TODO: Don't need this -> change to a straight reset signal
+                 mode: in STD_LOGIC; --TODO: Needs to be changed to be a single signal for MODE that will be controlled by SW1 (from top-level)
+                 stimulus_enable : in STD_LOGIC;
+                 player1_win_enable : in STD_LOGIC;
+                 player2_win_enable : in STD_LOGIC;
+                 player_1_score : in STD_LOGIC_VECTOR(1 downto 0);
+                 player_2_score : in STD_LOGIC_VECTOR(1 downto 0);
+                 secs   : in STD_LOGIC_VECTOR(3 downto 0);
+                 tenths_secs   : in STD_LOGIC_VECTOR(3 downto 0);
+                 hundredths_secs   : in STD_LOGIC_VECTOR(3 downto 0);
+                 thousandths_secs   : in STD_LOGIC_VECTOR(3 downto 0);
+                 red: out STD_LOGIC_VECTOR(3 downto 0);
+                 green: out STD_LOGIC_VECTOR(3 downto 0);
+                 blue: out STD_LOGIC_VECTOR(3 downto 0);
+                 hsync: out STD_LOGIC;
+                 vsync: out STD_LOGIC
+          );
+     end component;
+
+        component Game_Win_FSM is
+          Port (
+                clk : in STD_LOGIC;
+              reset : in STD_LOGIC;
+              start : in STD_LOGIC;
+              buzzer : out STD_LOGIC
+                 );
+        end component;
+        
+        component Title_Screen_FSM is
+          Port (
+                clk : in STD_LOGIC;
+              reset : in STD_LOGIC;
+              start : in STD_LOGIC;
+              buzzer : out STD_LOGIC
+                 );
+        end component;
+
+         component Stim_Sound is
+             Port (
+                 clk : in STD_LOGIC;
+                 reset : in STD_LOGIC;
+                 start : in STD_LOGIC;
+                 buzzer : out STD_LOGIC
+             );
+            end component;
+
 begin
+
+stim_song_reset <= NOT(stimulus_enable_i) OR reset;
+win_song_reset <= NOT((player1_win_enable_i OR player2_win_enable_i)) OR reset;
+win_i <= (player1_win_enable_i OR player2_win_enable_i);
+title_i <= NOT(start_game);
 
 REACT_FSM: reactionGame_FSM 
         PORT MAP(
@@ -294,8 +370,8 @@ REACT_FSM: reactionGame_FSM
                 reset   => reset,
                 start_game     => start_game,
                             
-                player1_input     => player1_input,
-                player2_input     => player2_input,
+                player1_input     => player2_input,
+                player2_input     => player1_input,
                 next_game_input   => next_game_input,
                                    
                 delayClockDivider_zero => delayClockDivider_zero_i,
@@ -425,8 +501,8 @@ DELAY_GEN: psuedoRandomDelayGenerator_FSM
 	            player2_LEDs           => player2_LEDs_i,
 	            player1_win_enable     => player1_win_enable_i,
 	            player2_win_enable     => player2_win_enable_i,
-	            player1_score          => open,
-	            player2_score          => open
+	            player1_score          => player_1_score_i,
+	            player2_score          => player_2_score_i
 	           );
 	           
 	  LET_MUX: letterMUX_FSM
@@ -461,8 +537,55 @@ DELAY_GEN: psuedoRandomDelayGenerator_FSM
 	                 reset => reset,
 	                 enable_flipflop => buzzer_zero_i,
 	                 buzzer_signal => buzzer_signal_i
-	                ); 
-	                 
+	                );
+        
+        VGA: vga_module 
+           PORT MAP (  clk => clk,
+                       reset => reset,
+                       mode => start_game,
+                       stimulus_enable => stimulus_enable_i,
+                       player1_win_enable=> player1_win_enable_i,
+                       player2_win_enable=> player2_win_enable_i,
+                       player_1_score => player_1_score_i,
+                       player_2_score => player_2_score_i,
+                       secs => secs_i,
+                       tenths_secs => tenths_secs_i,
+                       hundredths_secs => hundredths_secs_i,
+                       thousandths_secs => thousandths_secs_i,
+                       red => red_i,
+                       green => green_i,
+                       blue => blue_i,
+                       hsync => hsync_i,
+                       vsync => vsync_i
+                     );
+        
+
+        TITLE_SONG : Title_Screen_FSM
+            PORT MAP(
+                      clk => clk,
+                      reset => reset,
+                      start => title_i,
+                      buzzer => title_song_i
+                    );
+                    
+
+        GAME_OVER : Game_Win_FSM
+            PORT MAP(
+                       clk => clk,
+                       reset => win_song_reset, 
+                       start =>  win_i,
+                       buzzer => win_song_i
+                     );   
+ 
+        STIM_PLAY : Stim_Sound
+               PORT MAP(
+                      clk => clk,
+                      reset => stim_song_reset, 
+                      start =>  stimulus_enable_i,
+                      buzzer => stim_song_i
+                        );   
+                        
+                        
      stim_LED9      <= stim_LEDs_i(0);
      stim_LED10     <= stim_LEDs_i(1);
      stim_LED11     <= stim_LEDs_i(2);
@@ -471,16 +594,16 @@ DELAY_GEN: psuedoRandomDelayGenerator_FSM
      stim_LED14     <= stim_LEDs_i(5);
      stim_LED15     <= stim_LEDs_i(6);
                
-     player1_LED0   <= player1_LEDs_i(0);
-     player1_LED1   <= player1_LEDs_i(1);
-     player1_LED2   <= player1_LEDs_i(2);
+     player1_LED0   <= '0';
+     player1_LED1   <= '0';
+     player1_LED2   <= '0';
                
-     player2_LED4   <= player2_LEDs_i(0);
-     player2_LED5   <= player2_LEDs_i(1);
-     player2_LED6   <= player2_LEDs_i(2);
+     player2_LED4   <= '0';
+     player2_LED5   <= '0';
+     player2_LED6   <= '0';
                
-     P1Win_LED3      <= player1_win_enable_i;
-     P2Win_LED7      <= player2_win_enable_i;
+     P1Win_LED3      <= '0';
+     P2Win_LED7      <= '0';
                
      DP             <= seven_segment_signals_i(7);
      CA             <= seven_segment_signals_i(6);
@@ -496,8 +619,27 @@ DELAY_GEN: psuedoRandomDelayGenerator_FSM
      AN3            <= an_outputs_i(2);
      AN4            <= an_outputs_i(3);	    
      
-     Buzzer_Ring          <= buzzer_signal_i;  
+     --Buzzer_Ring          <= (title_buzz OR win_buzz);  
      
+     --Mapping VGA signals to output
+     VGA_hsync  <= hsync_i;
+     VGA_vsync <= vsync_i;
+     VGA_red <= red_i;
+     VGA_green <= green_i;
+     VGA_blue <= blue_i;
+     
+     BUZZER_CHOOSE: process(player1_win_enable_i,player2_win_enable_i, stimulus_enable_i, title_song_i)
+          begin
+          if(rising_edge(clk)) then
+              if((player1_win_enable_i OR player2_win_enable_i) = '1') then
+              Buzzer_Ring <= win_song_i;  
+              elsif(stimulus_enable_i = '1') then
+              Buzzer_Ring <= stim_song_i ;
+              elsif(title_i = '1') then
+              Buzzer_Ring <= title_song_i;
+              end if;
+          end if;
+          end process;
           
      DP_PLACE: process(clk) --takes care of decimal point when there is text vs when there are times being displayed
      begin 
